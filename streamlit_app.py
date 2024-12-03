@@ -69,12 +69,6 @@ else:
     y_pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
-    # Menampilkan hasil prediksi
-    st.subheader("📊 Hasil Prediksi")
-    st.write(f"RMSE (Root Mean Square Error): {rmse:.2f}")
-
-    # Visualisasi data historis dengan styling lebih baik
-    st.subheader("📈 Visualisasi Tren Harga Saham")
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(data['Date'], data['Close'], label='Harga Historis', color='blue')
     ax.set_xlabel("Tanggal")
