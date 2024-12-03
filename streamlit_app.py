@@ -68,7 +68,7 @@ else:
     # Prediksi
     y_pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-
+    
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(data['Date'], data['Close'], label='Harga Historis', color='blue')
     ax.set_xlabel("Tanggal")
