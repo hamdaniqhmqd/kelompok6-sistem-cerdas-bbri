@@ -87,7 +87,6 @@ else:
         y_pred = model.predict(X_test)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))  # Menghitung Root Mean Squared Error
 
-        st.subheader("Hasil Prediksi")
         st.subheader("Visualisasi Tren Harga Saham")
 
         # Memeriksa kolom yang akan digunakan untuk visualisasi
@@ -136,6 +135,7 @@ else:
         })
 
         # Menampilkan hasil prediksi masa depan
+        st.subheader("Hasil Prediksi")
         st.write(future_df)
 
         # Menampilkan grafik dengan data historis dan prediksi masa depan
