@@ -57,10 +57,7 @@ else:
     y_pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
-        # Display metrics
-    st.subheader("Hasil Prediksi")
-    st.write(f"RMSE (Root Mean Square Error): {rmse:.2f}")
-
+     
         # Visualize historical data
     st.subheader("Visualisasi Tren Harga Saham")
     fig, ax = plt.subplots(figsize=(10, 5))
