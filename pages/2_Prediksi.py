@@ -191,3 +191,5 @@ st.write("""
 Aplikasi ini menyediakan solusi praktis untuk memprediksi dan menganalisis tren harga saham Bank Rakyat Indonesia. Dengan fitur prediksi yang didukung algoritma regresi linear dan visualisasi data yang interaktif, Anda dapat membuat keputusan yang lebih baik berdasarkan tren pasar. Jangan lupa untuk mengunduh hasil prediksi untuk referensi di masa depan.
 Dari hasil prediksi tersebut, menggunakan metode **Regresi Linear**, evaluasi dengan MSE, MAE, dan RMSE.
 """)
+
+# selesai
