@@ -1,12 +1,4 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-import pickle
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-import matplotlib.pyplot as plt
-
 
 # Judul aplikasi
 st.markdown("""
