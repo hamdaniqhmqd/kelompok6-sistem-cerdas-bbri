@@ -74,13 +74,13 @@ else:
 
         # Menyimpan model yang sudah dilatih
         if menu == "Hari":
-            with open("bri_stock_model_hari.pkl", "wb") as f:
+            with open("bri_stock_model_hari.sav", "wb") as f:
                 pickle.dump(model, f)
         elif menu == "Minggu":
-            with open("bri_stock_model_minggu.pkl", "wb") as f:
+            with open("bri_stock_model_minggu.sav", "wb") as f:
                 pickle.dump(model, f)
         elif menu == "Bulan":
-            with open("bri_stock_model_bulan.pkl", "wb") as f:
+            with open("bri_stock_model_bulan.sav", "wb") as f:
                 pickle.dump(model, f)
 
         # Prediksi dan evaluasi model
