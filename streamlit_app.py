@@ -50,8 +50,8 @@ st.subheader("✨ **Fitur Utama**")
 st.markdown(
     """
     - **Dashboard Interaktif**: Grafik yang informatif dan mudah dipahami.
-    - **Prediksi Masa Depan**: Menggunakan model *Machine Learning* untuk prediksi harga saham berdasarkan pola data historis.
     - **Pemrosesan Data yang Akurat**: Data historis diambil langsung dari sumber terpercaya untuk memastikan keakuratan analisis.
+    - **Prediksi Masa Depan**: Menggunakan model *Machine Learning* untuk prediksi harga saham berdasarkan pola data historis.
     """
 )
 
@@ -60,8 +60,8 @@ st.subheader("📖 **Cara Menggunakan**")
 st.markdown(
     """
     1. Pilih menu **Dataset** untuk melihat grafik pergerakan harga saham BBRI secara historis.
-    2. Gunakan menu **Prediksi** untuk mendapatkan estimasi harga saham di masa depan.
-    3. Jelajahi menu **About Us** untuk memahami teknologi dan metodologi yang digunakan dalam aplikasi ini.
+    2. Gunakan menu **Prediksi** untuk mendapatkan estimasi harga saham di masa depan dan melihat hasil visualisasi grafik saham.
+    3. Jelajahi menu **About Us** untuk melihat tentang aplikasi, manfaat aplikasi, dan tim pengembang .
     """
 )
 
