@@ -7,46 +7,34 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
-# Menampilkan logo bank sebagai gambar
-st.image("bri.jpeg", width=800)
-
 # Judul aplikasi
-st.title("🔮 *Prediksi dan Visualisasi Tren Harga Saham Bank Rakyat Indonesia*")
+st.title("🔮 *Prediksi harga Saham Bank Rakyat Indonesia Untuk Beberapa Hari Kedepan*")
 
-# Menampilkan teks pengantar dengan gambar dan penjelasan
-col1, col2 = st.columns([1.5, 2.5])
-with col1:
-    st.image("LogoBRI.png", width=800)
-with col2:
-    st.write("*Selamat datang di aplikasi prediksi tren harga saham Bank Rakyat Indonesia (BRI).*\n", fontsize=20)
-    st.write(""""
-    Pilih menu untuk memulai analisis harga saham berdasarkan periode waktu yang diinginkan. Aplikasi ini dapat membantu memprediksi tren harga saham BRI berdasarkan data historis yang diunggah. 
-    Anda dapat memilih periode waktu yang berbeda dan memperoleh visualisasi serta prediksi untuk masa depan.
-    """, text_align="justify")
+# Langkah kerja penggunaan aplikasi
+st.subheader("**Langkah Kerja:**")
+st.write("""
+1. **Pastikan Dataset Lengkap**: Dataset yang digunakan harus mengandung kolom seperti *Date*, *Open*, *High*, *Low*, dan *Close* (bisa di cek di bagian Menu Dataset).
+2. **Pilih Periode Waktu**: Gunakan menu dropdown di sidebar untuk memilih periode waktu yang diinginkan seperti (Hari, Minggu, atau Bulan).
+3. **Prediksi Harga Saham Masa Depan**: Tentukan jumlah hari yang ingin diprediksi dengan menggunakan slider. Aplikasi akan memproses prediksi harga saham BRI untuk periode tersebut.
+4. **Visualisasi Hasil Prediksi**: Setelah prediksi dihitung, aplikasi akan menampilkan grafik yang menggambarkan harga saham historis dan harga prediksi untuk masa depan.
+5. **Unduh Hasil Prediksi**: Setelah melihat hasil prediksi, Anda dapat mengunduhnya dalam format CSV untuk referensi lebih lanjut atau analisis tambahan.
+""")
 
-st.write("Unggah dataset untuk memulai analisis dan prediksi.")
-
-# Sidebar dengan pilihan periode waktu
+# Sidebar dengan pilihan kategori waktu
 menu = st.sidebar.selectbox(
-    "Pilih Menu",
+    "Pilih Kategori Periode Waktu Dataset",
     ["Hari", "Minggu", "Bulan"]
-)  # Pilihan periode untuk analisis
+)
 
 # Menampilkan data berdasarkan periode yang dipilih
 if menu == "Hari":
-    st.header("📅 Menampilkan per Hari")
     data = pd.read_csv("bri/bbri.csv")  # Membaca dataset harian
-    st.dataframe(data)
 
 elif menu == "Minggu":
-    st.header("📅 Menampilkan per Minggu")
     data = pd.read_csv("bri/bbri_minggu.csv")  # Membaca dataset mingguan
-    st.dataframe(data)
 
 elif menu == "Bulan":
-    st.header("📅 Menampilkan per Bulan")
     data = pd.read_csv("bri/bbri_bulan.csv")  # Membaca dataset bulanan
-    st.dataframe(data)
 
 # Validasi kolom 'Date' ada dalam dataset
 if 'Date' not in data.columns:
@@ -59,12 +47,12 @@ else:
     # Menambahkan kolom 'Day' berdasarkan selisih dengan tanggal minimum
     data['Day'] = (data['Date'] - data['Date'].min()).dt.days
 
-    required_columns = ['Date', 'Close', 'Open', 'High', 'Low']
+    required_columns = ['Date', 'Close', 'Open', 'High', 'Low', 'Volume']
     if not all(col in data.columns for col in required_columns):
         st.error(f"Dataset harus mengandung kolom: {required_columns}")
     else:
         # Fitur untuk prediksi
-        X = data[['Day', 'Open', 'High', 'Low']]
+        X = data[['Day', 'Open', 'High', 'Low', 'Volume']]  # Menambahkan kolom 'Volume'
         y = data['Close']
 
         # Pembagian data untuk training dan testing (80% training, 20% testing)
@@ -74,73 +62,72 @@ else:
         model = LinearRegression()
         model.fit(X_train, y_train)
 
-        # Menyimpan model yang sudah dilatih
+        # Menyimpan model yang sudah dilatih sesuai dengan periode
         if menu == "Hari":
-            with open("bri_stock_model_hari.pkl", "wb") as f:
-                pickle.dump(model, f)
+            with open("bri_stock_model_hari.sav", "wb") as prediksi:
+                pickle.dump(model, prediksi)
         elif menu == "Minggu":
-            with open("bri_stock_model_minggu.pkl", "wb") as f:
-                pickle.dump(model, f)
+            with open("bri_stock_model_minggu.sav", "wb") as prediksi:
+                pickle.dump(model, prediksi)
         elif menu == "Bulan":
-            with open("bri_stock_model_bulan.pkl", "wb") as f:
-                pickle.dump(model, f)
+            with open("bri_stock_model_bulan.sav", "wb") as prediksi:
+                pickle.dump(model, prediksi)
 
         # Prediksi dan evaluasi model
         y_pred = model.predict(X_test)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))  # Menghitung Root Mean Squared Error
+        st.write(f"RMSE: {rmse:.2f}")
 
-        st.subheader("Hasil Prediksi")
-        st.subheader("Visualisasi Tren Harga Saham")
-
-        # Memeriksa kolom yang akan digunakan untuk visualisasi
-        show_close = st.checkbox("Tampilkan Close", value=True)
-        show_open = st.checkbox("Tampilkan Open", value=True)
-        show_high = st.checkbox("Tampilkan High", value=True)
-        show_low = st.checkbox("Tampilkan Low", value=True)
-
-        # Membuat daftar kolom yang ditampilkan berdasarkan checkbox yang dipilih
-        columns_to_display = ['Date']
-        if show_close:
-            columns_to_display.append('Close')
-        if show_open:
-            columns_to_display.append('Open')
-        if show_high:
-            columns_to_display.append('High')
-        if show_low:
-            columns_to_display.append('Low')
-
-        # Menampilkan grafik tren harga saham berdasarkan kolom yang dipilih
-        historical_chart = data[columns_to_display]
-        st.line_chart(historical_chart.rename(columns={"Date": "index"}).set_index("index"))
-
-        # Prediksi harga saham masa depan
-        days_future = st.slider("Prediksi untuk berapa hari ke depan?", min_value=1, max_value=365, value=30)
-
-        # Membuat data untuk prediksi masa depan
-        last_day = data['Day'].max()
-        future_days = np.array(range(last_day + 1, last_day + 1 + days_future)).reshape(-1, 1)
+        # Prediksi harga saham masa depan sesuai periode yang dipilih
+        if menu == "Hari":
+            st.subheader("📝 Prediksi Harga Saham untuk berapa hari ke depan.")
+            days_future = st.slider("🗓️ Geser slider untuk prediksi harga saham untuk berapa hari kedepan.", min_value=1, max_value=365, value=64)
+            future_days = np.array(range(data['Day'].max() + 1, data['Day'].max() + 1 + days_future)).reshape(-1, 1)
+        elif menu == "Minggu":
+            st.subheader("📝 Prediksi Harga Saham untuk berapa minggu ke depan.")
+            weeks_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa minggu kedepan.", min_value=1, max_value=52, value=24)
+            future_days = np.array(range(data['Day'].max() + 7, data['Day'].max() + 7 * (weeks_future + 1), 7)).reshape(-1, 1)
+        elif menu == "Bulan":
+            st.subheader("📝 Prediksi Harga Saham untuk berapa bulan ke depan.")
+            months_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa bulan kedepan.", min_value=1, max_value=12, value=6)
+            future_days = np.array(range(data['Day'].max() + 30, data['Day'].max() + 30 * (months_future + 1), 30)).reshape(-1, 1)
 
         # Mengambil data terakhir untuk Open, High, Low
         last_row = data.iloc[-1]
         open_price = last_row['Open']
         high_price = last_row['High']
         low_price = last_row['Low']
+        volume = last_row['Volume']
 
         # Membuat data prediksi
-        future_data = np.hstack([future_days, np.full((days_future, 3), [open_price, high_price, low_price])])
+        future_data = np.hstack([future_days, np.full((len(future_days), 4), [open_price, high_price, low_price, volume])])
         future_predictions = model.predict(future_data)
 
         # Membuat tanggal untuk prediksi masa depan
-        future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(days=1), periods=days_future)
+        if menu == "Hari":
+            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(days=1), periods=days_future)
+        elif menu == "Minggu":
+            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(weeks=1), periods=weeks_future)
+        elif menu == "Bulan":
+            future_dates = pd.date_range(data['Date'].max() + pd.DateOffset(months=1), periods=months_future)
+
         future_df = pd.DataFrame({
             "Date": future_dates,
             "Predicted_Close": future_predictions
         })
 
-        # Menampilkan hasil prediksi masa depan
-        st.write(future_df)
+        # Menambahkan status prediksi: Naik, Turun, atau Tetap
+        future_df['Status'] = future_df['Predicted_Close'].diff().apply(
+            lambda x: 'Naik' if x > 0 else ('Turun' if x < 0 else 'Tetap')
+        )
 
-        # Menampilkan grafik dengan data historis dan prediksi masa depan
+        # Menampilkan hasil prediksi masa depan beserta statusnya
+        st.write(f"📊 Hasil Prediksi Harga Saham Untuk {len(future_df)} Periode Kedepan")
+        
+        # Menggunakan st.dataframe untuk tampilan yang lebih interaktif dan bisa digulir
+        st.dataframe(future_df, use_container_width=True)
+
+        # Menyiapkan data untuk grafik dengan memastikan tipe data yang tepat
         prediction_chart = pd.concat(
             [
                 data[['Date', 'Close']],
@@ -148,12 +135,21 @@ else:
             ],
             ignore_index=True
         )
-        st.line_chart(prediction_chart.rename(columns={"Date": "index"}).set_index("index"))
 
-#paling bawah
+        # Pastikan kolom 'Date' bertipe datetime
+        prediction_chart['Date'] = pd.to_datetime(prediction_chart['Date'], errors='coerce')
 
+        # Pastikan kolom 'Close' bertipe numerik
+        prediction_chart['Close'] = pd.to_numeric(prediction_chart['Close'], errors='coerce')
+
+        # Menampilkan grafik dengan data yang sudah diperbaiki
+        st.write(f"📊 Hasil Visualisasi Grafik Harga Saham Untuk {len(future_df)} Periode Kedepan")
+        st.line_chart(prediction_chart.set_index('Date')['Close'])
+                
+        
 # Opsional: Simpan atau unduh prediksi sebagai file CSV
-st.subheader("📥 *Unduh Prediksi Tren Masa Depan*")
+st.subheader("📥 *Unduh Prediksi Harga Saham Bang Rakyat Indonesia Kedepannya*")
+st.write("Unduh Data hasil prediksi untuk referensi harga saham kedepannya. Unduh data tersebut dengan format CSV")
 csv = prediction_chart.to_csv(index=False)
 st.download_button(
     label="Download Prediksi",
@@ -161,3 +157,10 @@ st.download_button(
     file_name="prediksi_harga_saham_bri.csv",
     mime="text/csv"
 )
+
+# Footer dengan kesimpulan
+st.markdown("---")
+st.subheader("**Kesimpulan:**")
+st.write("""
+Aplikasi ini menyediakan solusi praktis untuk memprediksi dan menganalisis tren harga saham Bank Rakyat Indonesia. Dengan fitur prediksi yang didukung algoritma regresi linear dan visualisasi data yang interaktif, Anda dapat membuat keputusan yang lebih baik berdasarkan tren pasar. Jangan lupa untuk mengunduh hasil prediksi untuk referensi di masa depan.
+""")
