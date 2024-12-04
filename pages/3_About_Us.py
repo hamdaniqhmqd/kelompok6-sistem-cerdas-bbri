@@ -27,6 +27,7 @@ def about_us():
         }
         .team-member {
             text-align: center;
+            
             margin-top: 10px;
         }
         .section {

@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 # Judul aplikasi
 st.title("🔮 *Prediksi harga Saham Bank Rakyat Indonesia Untuk Beberapa Hari Kedepan*")
 
+st.markdown("---")
+
 # Langkah kerja penggunaan aplikasi
 st.subheader("**Langkah Kerja:**")
 st.write("""
@@ -22,7 +24,7 @@ st.write("""
 
 # Sidebar dengan pilihan kategori waktu
 menu = st.sidebar.selectbox(
-    "Pilih Kategori Periode Waktu Dataset",
+    "Pilih Kategori Waktu Dataset",
     ["Hari", "Minggu", "Bulan"]
 )
 
@@ -35,6 +37,8 @@ elif menu == "Minggu":
 
 elif menu == "Bulan":
     data = pd.read_csv("bri/bbri_bulan.csv")  # Membaca dataset bulanan
+
+st.markdown("---")
 
 # Validasi kolom 'Date' ada dalam dataset
 if 'Date' not in data.columns:
@@ -72,11 +76,6 @@ else:
         elif menu == "Bulan":
             with open("bri_stock_model_bulan.sav", "wb") as prediksi:
                 pickle.dump(model, prediksi)
-
-        # Prediksi dan evaluasi model
-        y_pred = model.predict(X_test)
-        rmse = np.sqrt(mean_squared_error(y_test, y_pred))  # Menghitung Root Mean Squared Error
-        st.write(f"RMSE: {rmse:.2f}")
 
         # Prediksi harga saham masa depan sesuai periode yang dipilih
         if menu == "Hari":
@@ -145,10 +144,29 @@ else:
         # Menampilkan grafik dengan data yang sudah diperbaiki
         st.write(f"📊 Hasil Visualisasi Grafik Harga Saham Untuk {len(future_df)} Periode Kedepan")
         st.line_chart(prediction_chart.set_index('Date')['Close'])
+        
+        # Menampilkan hasil evaluasi
+        st.markdown("---")
+        
+        # Prediksi dan evaluasi model
+        y_pred = model.predict(X_test)
+
+        # Menghitung MSE, MAE, dan RMSE
+        mse = mean_squared_error(y_test, y_pred) 
+        mae = np.mean(np.abs(y_test - y_pred))   
+        rmse = np.sqrt(mse)                      
+
+        st.subheader("🗃️ Hasil Evaluasi")
+        st.write("Hasil Evaluasi harga saham secara keseluruhan.")
+
+        st.write(f"Mean Absolute Error (MAE): {mae:.2f}")
+        st.write(f"Mean Squared Error (MSE): {mse:.2f}")
+        st.write(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
                 
         
 # Opsional: Simpan atau unduh prediksi sebagai file CSV
-st.subheader("📥 *Unduh Prediksi Harga Saham Bang Rakyat Indonesia Kedepannya*")
+st.markdown("---")
+st.subheader("📥 Unduh Prediksi Harga Saham Bang Rakyat Indonesia Kedepannya")
 st.write("Unduh Data hasil prediksi untuk referensi harga saham kedepannya. Unduh data tersebut dengan format CSV")
 csv = prediction_chart.to_csv(index=False)
 st.download_button(
@@ -158,9 +176,20 @@ st.download_button(
     mime="text/csv"
 )
 
+# Metode yang Digunakan
+st.markdown("---")
+st.subheader("Metode Prediksi Harga")
+st.write("""
+Pada program prediksi harga saham, menggunakan metode **Regresi Linear** untuk memprediksi harga penutupan saham (Close) berdasarkan hubungan variabel independen seperti Day, Open, High, Low, dan Volume. Data historis diolah menjadi fitur numerik, dilatih dengan Linear Regression, dan dievaluasi menggunakan Mean Squared Error (MSE), Mean Absolute Error (MAE), dan Root Mean Squared Error (RMSE).
+Prediksi masa depan dilakukan secara progresif (1 hari, 7 hari, atau 30 hari), dengan hasil berupa tabel prediksi yang mencakup tanggal dan status harga (Naik, Turun, atau Tetap).
+""")
+
 # Footer dengan kesimpulan
 st.markdown("---")
 st.subheader("**Kesimpulan:**")
 st.write("""
 Aplikasi ini menyediakan solusi praktis untuk memprediksi dan menganalisis tren harga saham Bank Rakyat Indonesia. Dengan fitur prediksi yang didukung algoritma regresi linear dan visualisasi data yang interaktif, Anda dapat membuat keputusan yang lebih baik berdasarkan tren pasar. Jangan lupa untuk mengunduh hasil prediksi untuk referensi di masa depan.
+Dari hasil prediksi tersebut, menggunakan metode **Regresi Linear**, evaluasi dengan MSE, MAE, dan RMSE.
 """)
+
+# selesai
