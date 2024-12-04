@@ -23,5 +23,5 @@ with col2:
     Pilih menu untuk memulai analisis harga saham berdasarkan periode waktu yang diinginkan. Aplikasi ini dapat membantu memprediksi tren harga saham BRI berdasarkan data historis yang diunggah. 
     Anda dapat memilih periode waktu yang berbeda dan memperoleh visualisasi serta prediksi untuk masa depan.
     """, text_align="justify")
-    
 
+st.write("Unggah dataset untuk memulai analisis dan prediksi.")
