@@ -18,7 +18,6 @@ with col2:
     Anda dapat memilih periode waktu yang berbeda dan memperoleh visualisasi data historis.
     """, text_align="justify")
 
-st.write("Unggah dataset untuk memulai analisis.")
 
 # Sidebar dengan pilihan periode waktu
 menu = st.sidebar.selectbox(
