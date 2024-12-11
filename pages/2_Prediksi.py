@@ -77,20 +77,6 @@ else:
             with open("bri_stock_model_bulan.sav", "wb") as prediksi:
                 pickle.dump(model, prediksi)
 
-        # Prediksi harga saham masa depan sesuai periode yang dipilih
-        if menu == "Hari":
-            st.subheader("📝 Prediksi Harga Saham untuk berapa hari ke depan.")
-            days_future = st.slider("🗓️ Geser slider untuk prediksi harga saham untuk berapa hari kedepan.", min_value=1, max_value=365, value=64)
-            future_days = np.array(range(data['Day'].max() + 1, data['Day'].max() + 1 + days_future)).reshape(-1, 1)
-        elif menu == "Minggu":
-            st.subheader("📝 Prediksi Harga Saham untuk berapa minggu ke depan.")
-            weeks_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa minggu kedepan.", min_value=1, max_value=52, value=24)
-            future_days = np.array(range(data['Day'].max() + 7, data['Day'].max() + 7 * (weeks_future + 1), 7)).reshape(-1, 1)
-        elif menu == "Bulan":
-            st.subheader("📝 Prediksi Harga Saham untuk berapa bulan ke depan.")
-            months_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa bulan kedepan.", min_value=1, max_value=12, value=6)
-            future_days = np.array(range(data['Day'].max() + 30, data['Day'].max() + 30 * (months_future + 1), 30)).reshape(-1, 1)
-
         # Mengambil data terakhir untuk Open, High, Low
         last_row = data.iloc[-1]
         open_price = last_row['Open']
@@ -98,17 +84,42 @@ else:
         low_price = last_row['Low']
         volume = last_row['Volume']
 
-        # Membuat data prediksi
-        future_data = np.hstack([future_days, np.full((len(future_days), 4), [open_price, high_price, low_price, volume])])
-        future_predictions = model.predict(future_data)
-
         # Membuat tanggal untuk prediksi masa depan
         if menu == "Hari":
-            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(days=1), periods=days_future)
+            # Prediksi berdasarkan hari
+            st.subheader("📝 Prediksi Harga Saham untuk berapa hari ke depan.")
+            days_future = st.slider("🗓️ Geser slider untuk prediksi harga saham untuk berapa hari kedepan.", min_value=1, max_value=365, value=64)
+
+            # Membuat data prediksi harian
+            future_days = np.array(range(data['Day'].max() + 1, data['Day'].max() + 1 + days_future)).reshape(-1, 1)
+            future_data = np.hstack([future_days, np.full((len(future_days), 4), [open_price, high_price, low_price, volume])])
+            future_predictions = model.predict(future_data)
+            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(days=1), periods=days_future, freq='D')  # Frekuensi harian
+
+
         elif menu == "Minggu":
-            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(weeks=1), periods=weeks_future)
+            # Prediksi berdasarkan minggu
+            st.subheader("📝 Prediksi Harga Saham untuk berapa minggu ke depan.")
+            weeks_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa minggu kedepan.", min_value=1, max_value=52, value=24)
+
+            # Membuat data prediksi mingguan
+            future_weeks = np.array(range(data['Day'].max() // 7 + 1, data['Day'].max() // 7 + weeks_future + 1)).reshape(-1, 1) * 7
+            future_data = np.hstack([future_weeks, np.full((len(future_weeks), 4), [open_price, high_price, low_price, volume])])
+            future_predictions = model.predict(future_data)
+            future_dates = pd.date_range(data['Date'].max() + pd.Timedelta(weeks=1), periods=weeks_future, freq='W')  # Frekuensi mingguan (setiap minggu)
+
+
         elif menu == "Bulan":
-            future_dates = pd.date_range(data['Date'].max() + pd.DateOffset(months=1), periods=months_future)
+            # Prediksi berdasarkan bulan
+            st.subheader("📝 Prediksi Harga Saham untuk berapa bulan ke depan.")
+            months_future = st.slider("📅 Geser slider untuk prediksi harga saham untuk berapa bulan kedepan.", min_value=1, max_value=12, value=6)
+
+            # Membuat data prediksi bulanan
+            future_months = np.array(range(data['Day'].max() // 30 + 1, data['Day'].max() // 30 + months_future + 1)).reshape(-1, 1) * 30
+            future_data = np.hstack([future_months, np.full((len(future_months), 4), [open_price, high_price, low_price, volume])])
+            future_predictions = model.predict(future_data)
+            future_dates = pd.date_range(data['Date'].max() + pd.DateOffset(months=1), periods=months_future, freq='M')  # Frekuensi bulanan (akhir bulan)
+
 
         future_df = pd.DataFrame({
             "Date": future_dates,
